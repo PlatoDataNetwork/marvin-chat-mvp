@@ -9,11 +9,12 @@ from langchain.chains.llm import LLMChain
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 from langchain.vectorstores.base import VectorStore
+from langchain.vectorstores import Vectara
 from langchain.chat_models import ChatOpenAI
 
 
 def get_chain(
-    vectorstore: VectorStore, question_handler, stream_handler, tracing: bool = True
+    vectorstore: Vectara, question_handler, stream_handler, tracing: bool = True
 ) -> RetrievalQA:
     """Create a ChatVectorDBChain for question/answering."""
     # Construct a ChatVectorDBChain with a streaming llm for combine docs

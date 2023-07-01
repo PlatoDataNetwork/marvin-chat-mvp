@@ -7,24 +7,32 @@ from typing import Optional
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.templating import Jinja2Templates
 from langchain.vectorstores import VectorStore
+from langchain.vectorstores import Vectara
 
 from callback import QuestionGenCallbackHandler, StreamingLLMCallbackHandler
 from query_data import get_chain
 from schemas import ChatResponse
 
+# loading environment variables
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv(), override=True)
+
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
-vectorstore: Optional[VectorStore] = None
+#vectorstore: Optional[Vectara] = None
 
 
 @app.on_event("startup")
 async def startup_event():
     logging.info("loading vectorstore")
-    if not Path("vectorstore.pkl").exists():
-        raise ValueError("vectorstore.pkl does not exist, please run ingest.py first")
-    with open("vectorstore.pkl", "rb") as f:
-        global vectorstore
-        vectorstore = pickle.load(f)
+    
+    
+    
+    #if not Path("vectorstore.pkl").exists():
+    #    raise ValueError("vectorstore.pkl does not exist, please run ingest.py first")
+    #with open("vectorstore.pkl", "rb") as f:
+    #   global vectorstore
+    #    vectorstore = pickle.load(f)
 
 
 @app.get("/")
@@ -35,6 +43,17 @@ async def get(request: Request):
 @app.websocket("/chat")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
+    
+     # initializing Vectara
+    vectorstore = Vectara(
+    vectara_customer_id='3798431385',
+    vectara_corpus_id='1',
+    vectara_api_key='zwt_4md2mfDg_qxXvDuBVRPuCeXb_ga-wQSS3RwRrA'
+    )
+    
+    
+   
+
     question_handler = QuestionGenCallbackHandler(websocket)
     stream_handler = StreamingLLMCallbackHandler(websocket)
     chat_history = []
